@@ -1,0 +1,55 @@
+[package]
+name = "rust_template"
+version = "0.1.0"
+edition = "2024"
+license-file = "LICENSE"
+description = "这是一个简单的 rust 模板项目."
+
+[profile.dev]
+lto = false
+opt-level = 0
+debug = true
+
+[profile.release]
+lto = "fat"
+opt-level = "z"
+strip = true
+debug = false
+panic = "abort"
+codegen-units = 1
+overflow-checks = false
+debug-assertions = false
+
+[dependencies]
+log = "0.4.27"
+flexi_logger = "0.30.1"
+anyhow = "1.0.98"
+thiserror = "2.0.12"
+serde = { version = "1.0.219", default-features = false, features = ["derive"] }
+serde_json = "1.0.140"
+serde_yaml = "0.9.34"
+rust_decimal = "1.37.1"
+rust_decimal_macros = "1.37.1"
+walkdir = "2.5.0"
+rand = "0.9.1"
+byte-unit = "5.1.6"
+bytes = { version = "1.10.1", features = ["serde"] }
+xx-toolkit = { git = "https://github.com/ifeisier/xx-toolkit", branch = "main", version = "0.1.0" }
+
+tokio = { version = "1.45.0", default-features = false, features = ["rt", "rt-multi-thread", "net", "fs", "time", "sync", "signal"] }
+
+r2d2 = "0.8.10"
+redis = { version = "0.31.0", default-features = false, features = ["r2d2", "script"] }
+mysql = { version = "26.0.0", features = ["rust_decimal", "chrono"]}
+
+axum = "0.8.4"
+tower = { version = "0.5.2", default-features = false, features = ["limit", "timeout"] }
+#axum-macros = "0.3.7"
+#jsonwebtoken = "9.3.1"
+#axum-valid = "0.23.0"
+#axum-extra = {version = "0.10.1", default-features = false, features = ["typed-header"]}
+#headers = "0.4.0"
+#tower-http = { version = "0.6.4", default-features = false, features = ["validate-request", "auth"]}
+reqwest = { version = "0.12.17", default-features = false, features = ["blocking", "json", "rustls-tls"] }
+
+rumqttc = "0.24.0"

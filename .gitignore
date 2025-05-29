@@ -1,0 +1,8 @@
+debug/
+target/
+**/*.rs.bk
+*.pdb
+.idea/
+.DS_Store
+*.lock
+log/
