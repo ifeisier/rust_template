@@ -11,18 +11,18 @@ use redis::Client;
 /// 需要在整个 app 中共享的数据.
 #[allow(dead_code)]
 pub struct AppShared {
-    // /// mysql 连接池
-    // pub mysql_pool: mysql::Pool,
-    // /// redis 连接池
-    // pub redis_pool: Pool<Client>,
+    /// mysql 连接池
+    pub mysql_pool: mysql::Pool,
+    /// redis 连接池
+    pub redis_pool: Pool<Client>,
 }
 
 impl AppShared {
     /// 加载
     pub async fn load() -> Result<Self> {
         Ok(Self {
-            // mysql_pool: Self::mysql()?,
-            // redis_pool: Self::redis()?,
+            mysql_pool: Self::mysql()?,
+            redis_pool: Self::redis()?,
         })
     }
 
