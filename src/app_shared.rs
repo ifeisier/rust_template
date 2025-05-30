@@ -1,9 +1,9 @@
 //! app 内共享数据.
 //!
-//! 用来组装 domain、infra、interfaces 模块数据.
+//! 用来组装 domain、infrastructure、interfaces 模块数据.
 
-use crate::infra::persistence::mysql::{self as _mysql, MySQLOptions};
-use crate::infra::persistence::redis::{self as _redis, RedisOptions};
+use crate::infrastructure::persistence::mysql::{self as _mysql, MySQLOptions};
+use crate::infrastructure::persistence::redis::{self as _redis, RedisOptions};
 use anyhow::Result;
 use r2d2::Pool;
 use redis::Client;

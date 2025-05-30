@@ -4,7 +4,7 @@
 
 mod app_shared;
 mod domain;
-mod infra;
+mod infrastructure;
 mod interfaces;
 mod shared;
 
