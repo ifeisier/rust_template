@@ -31,6 +31,7 @@ pub struct MqttClientOptions {
 }
 impl MqttClientOptions {
     /// 从文件加载配置.
+    #[allow(dead_code)]
     pub fn from_file(path: &str) -> Result<Self> {
         from_yaml_file(path)
     }
