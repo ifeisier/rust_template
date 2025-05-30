@@ -2,5 +2,4 @@
 //!
 //! 在具体的业务逻辑中只能依赖 domain 中的 traits 模块, 来调用功能.
 
-pub mod controllers;
-pub mod services;
+pub mod http;

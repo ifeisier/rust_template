@@ -2,18 +2,17 @@
 
 //! 这是一个简单的 rust 模板项目.
 
-mod app_shared;
+mod application;
 mod domain;
 mod infrastructure;
 mod interfaces;
 mod shared;
 
-use crate::app_shared::AppShared;
-use crate::interfaces::controllers::system_info;
-use anyhow::Result;
-use axum::{Router, routing::get};
+use crate::interfaces::http::shared::HttpShared;
+use crate::interfaces::http::start_http;
 use shared::utils::flexi_logger::init_flexi_logger;
-use std::{process::exit, sync::Arc, time::Duration};
+use std::io::Result;
+use std::{process::exit, time::Duration};
 use tokio::runtime::{Builder, Runtime};
 use tokio::signal;
 
@@ -32,44 +31,35 @@ fn main() {
 
 /// 异步执行入口
 async fn async_main() {
-    let app_shared = AppShared::load().await;
-    if let Err(e) = app_shared {
-        log::error!("load app_shared error: {}", e);
-        exit(1);
-    }
+    let http_shared = HttpShared::load().await;
+    let http_shared = match http_shared {
+        Ok(v) => v,
+        Err(e) => {
+            log::error!("load app_shared error: {}", e);
+            exit(1);
+        }
+    };
 
-    if let Err(e) = start_http(app_shared.unwrap()).await {
+    if let Err(e) = start_http(http_shared).await {
         log::error!("start http service error: {}", e);
         exit(1);
     }
 }
 
-/// 启动 HTTP 服务.
-async fn start_http(app_shared: AppShared) -> Result<()> {
-    let app_shared = Arc::new(app_shared);
-    let app = Router::new()
-        .route("/system/info", get(system_info))
-        .with_state(app_shared);
-
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await?;
-    axum::serve(listener, app).await?;
-    Ok(())
-}
-
 /// 新建多线程运行时
 #[allow(dead_code)]
-fn new_multi_thread() -> std::io::Result<Runtime> {
+fn new_multi_thread() -> Result<Runtime> {
     builder(Builder::new_multi_thread().worker_threads(5))
 }
 
 /// 使用当前线程新建运行时
 #[allow(dead_code)]
-fn new_current_thread() -> std::io::Result<Runtime> {
+fn new_current_thread() -> Result<Runtime> {
     builder(&mut Builder::new_current_thread())
 }
 
 /// 配置 Builder
-fn builder(builder: &mut Builder) -> std::io::Result<Runtime> {
+fn builder(builder: &mut Builder) -> Result<Runtime> {
     builder
         .enable_all()
         .max_io_events_per_tick(2048)
