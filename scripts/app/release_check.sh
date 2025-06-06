@@ -11,3 +11,4 @@ cargo clean
 cargo update
 cargo check
 cargo deny check
+cargo clippy --release

@@ -8,4 +8,5 @@ export LOG_LEVEL=trace
 
 cd "$dir"
 cargo fmt --all
+cargo clippy
 cargo run
