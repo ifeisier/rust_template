@@ -1,0 +1,16 @@
+[package]
+name = "internal_ffi"
+version = "0.1.0"
+edition.workspace = true
+description = "调用外部系统 (FFI, gRPC, HTTP 客户端等)"
+
+[dependencies]
+log = {workspace = true}
+anyhow = {workspace = true}
+serde = {workspace = true}
+mysql = {workspace = true}
+r2d2 = {workspace = true}
+redis = {workspace = true}
+xx-toolkit = {workspace = true}
+rumqttc = {workspace = true}
+tokio = {workspace = true}
