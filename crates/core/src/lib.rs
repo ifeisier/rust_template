@@ -17,3 +17,5 @@
 //!   - Application 可以调用多个 Domain
 //!   - Domain 之间不能相互调用 (各自独立, 互不干涉)
 //!   - Domain 也不调用 Application (它不关心业务流程)
+
+pub mod mqtt_event;

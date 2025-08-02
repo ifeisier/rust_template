@@ -2,9 +2,11 @@
 
 use anyhow::Result;
 use rumqttc::Error;
-use rumqttc::v5::{AsyncClient, EventLoop, MqttOptions, mqttbytes::QoS};
+use rumqttc::v5::Event;
+use rumqttc::v5::{AsyncClient, MqttOptions, mqttbytes::QoS};
 use serde::Deserialize;
 use std::time::Duration;
+use tokio::sync::mpsc;
 use xx_toolkit::yaml::from_yaml_file;
 
 /// MQTT 客户端信息
@@ -45,7 +47,7 @@ impl MQTTV5Client {
     ///
     /// 返回 (客户端实例, EventLoop)
     #[allow(dead_code)]
-    pub async fn new(client_info: MqttClientOptions) -> Result<(Self, EventLoop)> {
+    pub async fn new(client_info: MqttClientOptions) -> Result<(Self, mpsc::Receiver<Event>)> {
         let mut options = MqttOptions::new(client_info.id, client_info.host, client_info.port);
         options.set_keep_alive(Duration::from_secs(15));
         options.set_clean_start(true);
@@ -53,12 +55,26 @@ impl MQTTV5Client {
         options.set_max_packet_size(Some(1048576)); // 1048576Byte = 1MB
         options.set_credentials(client_info.user_name, client_info.pass_word);
 
-        let (client, event_loop) = AsyncClient::new(options, client_info.channel_cap);
+        let (client, mut event_loop) = AsyncClient::new(options, client_info.channel_cap);
         for ele in client_info.subscribes {
             client.subscribe(ele, QoS::AtLeastOnce).await?;
         }
 
-        Ok((MQTTV5Client { client }, event_loop))
+        let (tx, event_rx) = mpsc::channel::<Event>(client_info.channel_cap);
+        tokio::spawn(async move {
+            loop {
+                match event_loop.poll().await {
+                    Ok(event) => {
+                        if let Err(e) = tx.send(event).await {
+                            log::error!("将MQTT事件发送到通道错误:{:?}", e);
+                        }
+                    }
+                    Err(e) => log::error!("接收MQTT事件错误:{:?}", e),
+                }
+            }
+        });
+
+        Ok((MQTTV5Client { client }, event_rx))
     }
 
     /// 发送 MQTT 消息
@@ -96,11 +112,11 @@ impl MQTTV5Client {
         Ok(())
     }
 
-    /// 获取完整的 MQTT 客户端
-    #[allow(dead_code)]
-    pub fn get_client(&self) -> AsyncClient {
-        self.client.clone()
-    }
+    // 获取完整的 MQTT 客户端
+    // #[allow(dead_code)]
+    // pub fn get_client(&self) -> AsyncClient {
+    //     self.client.clone()
+    // }
 }
 
 /// 判断和返回 v5.0 的 qos

@@ -5,3 +5,7 @@ edition.workspace = true
 description = "业务核心逻辑 (Domain + Application)"
 
 [dependencies]
+tokio = {workspace = true}
+anyhow = {workspace = true}
+log = {workspace = true}
+rumqttc = {workspace = true}

@@ -13,9 +13,7 @@ pub(crate) async fn system_info() -> Json<Value> {
 }
 
 /// 启动 HTTP 服务.
-pub(crate) async fn start_http(mut app_context: AppContext) -> anyhow::Result<()> {
-    app_context.mqtt_event_loop = None;
-
+pub(crate) async fn start_http(app_context: AppContext) -> anyhow::Result<()> {
     let http_shared = Arc::new(app_context);
     let app = Router::new()
         .route("/system_info", get(system_info))

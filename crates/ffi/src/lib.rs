@@ -5,13 +5,14 @@
 use crate::externals::mqtt_client::MQTTV5Client;
 use anyhow::Result;
 use redis::Client;
-use rumqttc::v5::EventLoop;
+use rumqttc::v5::Event;
+use tokio::sync::mpsc;
 
 pub(crate) mod externals;
 pub mod impls;
 
 /// 初始化 Mqtt 客户端
-pub async fn init_mqtt_client(path: &str) -> Result<(MQTTV5Client, EventLoop)> {
+pub async fn init_mqtt_client(path: &str) -> Result<(MQTTV5Client, mpsc::Receiver<Event>)> {
     let opt = externals::mqtt_client::MqttClientOptions::from_file(path)?;
     MQTTV5Client::new(opt).await
 }
