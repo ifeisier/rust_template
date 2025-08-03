@@ -1,0 +1,13 @@
+id: "client1"
+host: "broker.emqx.io"
+port: 1883
+user_name: "emqx"
+pass_word: "public"
+channel_cap: 1000
+subscribes:
+  - "test1"
+  - "test2"
+  - "test3"
+  - "test4"
+  - "test5"
+  - "test6"
