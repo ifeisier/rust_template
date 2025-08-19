@@ -1,6 +1,7 @@
 [package]
 name = "interfaces"
 version = "0.1.0"
+license = "MIT"
 edition.workspace = true
 description = "暴露给外部的接口 (Web 服务)"
 
