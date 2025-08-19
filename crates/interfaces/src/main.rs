@@ -24,7 +24,7 @@ use tokio::signal;
 fn main() {
     // 决定环境 (默认 development)
     let env = env::var("APP_ENV").unwrap_or_else(|_| "development".into());
-    let env_file = format!(".env.{}", env);
+    let env_file = format!(".env.{env}");
     from_filename(&env_file).ok();
 
     let logger = init_flexi_logger().unwrap();
@@ -44,13 +44,13 @@ async fn async_main() {
     let app_context = match app_context {
         Ok(v) => v,
         Err(e) => {
-            log::error!("build app context error: {}", e);
+            log::error!("build app context error: {e}");
             exit(1);
         }
     };
 
     if let Err(e) = start_http(app_context).await {
-        log::error!("start http service error: {}", e);
+        log::error!("start http service error: {e}");
         exit(1);
     }
 }

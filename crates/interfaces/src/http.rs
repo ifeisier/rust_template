@@ -8,12 +8,12 @@ use serde_json::{Value, json};
 use std::sync::Arc;
 
 /// 返回系统信息
-pub(crate) async fn system_info() -> Json<Value> {
+pub async fn system_info() -> Json<Value> {
     Json(json!({"version": "1.0.0"}))
 }
 
 /// 启动 HTTP 服务.
-pub(crate) async fn start_http(app_context: AppContext) -> anyhow::Result<()> {
+pub async fn start_http(app_context: AppContext) -> anyhow::Result<()> {
     let http_shared = Arc::new(app_context);
     let app = Router::new()
         .route("/system_info", get(system_info))

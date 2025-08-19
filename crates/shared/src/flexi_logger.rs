@@ -1,4 +1,4 @@
-//! 初始化 flexi_logger 日志.
+//! 初始化 `flexi_logger` 日志.
 
 use anyhow::Result;
 use flexi_logger::{
@@ -11,7 +11,11 @@ use std::{
     {env, thread},
 };
 
-/// 初始化 flexi_logger
+/// 初始化 `flexi_logger`
+///
+/// # Errors
+///
+/// 如果日志初始化失败，会返回 `flexi_logger::FlexiLoggerError`。
 pub fn init_flexi_logger() -> Result<LoggerHandle> {
     let log_name = env::var("LOG_NAME")?;
     let log_level = env::var("LOG_LEVEL")?;
@@ -19,7 +23,7 @@ pub fn init_flexi_logger() -> Result<LoggerHandle> {
     let log_directory: String;
     #[cfg(debug_assertions)]
     {
-        log_directory = format!("log/{}", log_name);
+        log_directory = format!("log/{log_name}");
     }
     #[cfg(not(debug_assertions))]
     {
@@ -52,7 +56,7 @@ pub fn init_flexi_logger() -> Result<LoggerHandle> {
     // 100MB = 100000000 bytes
     logger = logger
         .rotate(
-            Criterion::AgeOrSize(Age::Day, 10000000),
+            Criterion::AgeOrSize(Age::Day, 10_000_000),
             Naming::Timestamps,
             Cleanup::KeepLogFiles(30),
         )

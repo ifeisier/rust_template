@@ -10,7 +10,7 @@ pub fn dispatch_mqtt_event(mut event_loop: mpsc::Receiver<Event>) {
             None => {
                 log::warn!("MQTT事件通道已关闭.");
             }
-            Some(event) => log::info!("MQTT事件: {:#?}", event),
+            Some(event) => log::info!("MQTT事件: {event:#?}"),
         }
     });
 }

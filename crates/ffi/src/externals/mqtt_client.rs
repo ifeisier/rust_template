@@ -45,14 +45,14 @@ pub struct MQTTV5Client {
 impl MQTTV5Client {
     /// 创建新的 v5.0 客户端
     ///
-    /// 返回 (客户端实例, EventLoop)
+    /// 返回 (客户端实例, `EventLoop`)
     #[allow(dead_code)]
     pub async fn new(client_info: MqttClientOptions) -> Result<(Self, mpsc::Receiver<Event>)> {
         let mut options = MqttOptions::new(client_info.id, client_info.host, client_info.port);
         options.set_keep_alive(Duration::from_secs(15));
         options.set_clean_start(true);
         options.set_connection_timeout(30);
-        options.set_max_packet_size(Some(1048576)); // 1048576Byte = 1MB
+        options.set_max_packet_size(Some(1_048_576)); // 1048576Byte = 1MB
         options.set_credentials(client_info.user_name, client_info.pass_word);
 
         let (client, mut event_loop) = AsyncClient::new(options, client_info.channel_cap);
@@ -66,20 +66,20 @@ impl MQTTV5Client {
                 match event_loop.poll().await {
                     Ok(event) => {
                         if let Err(e) = tx.send(event).await {
-                            log::error!("将MQTT事件发送到通道错误:{:?}", e);
+                            log::error!("将MQTT事件发送到通道错误:{e:?}");
                         }
                     }
-                    Err(e) => log::error!("接收MQTT事件错误:{:?}", e),
+                    Err(e) => log::error!("接收MQTT事件错误:{e:?}"),
                 }
             }
         });
 
-        Ok((MQTTV5Client { client }, event_rx))
+        Ok((Self { client }, event_rx))
     }
 
     /// 发送 MQTT 消息
     #[allow(dead_code)]
-    pub async fn publish(&self, topic: &str, qos: u8, payload: Vec<u8>) -> Result<()> {
+    pub fn publish(&self, topic: &str, qos: u8, payload: Vec<u8>) -> Result<()> {
         let qos = qos_v5(qos)?;
 
         // publish 和 try_publish 的区别
@@ -91,7 +91,7 @@ impl MQTTV5Client {
 
     /// 发送 MQTT 保留消息
     #[allow(dead_code)]
-    pub async fn publish_retain(&self, topic: &str, qos: u8, payload: Vec<u8>) -> Result<()> {
+    pub fn publish_retain(&self, topic: &str, qos: u8, payload: Vec<u8>) -> Result<()> {
         let qos = qos_v5(qos)?;
         self.client.try_publish(topic, qos, true, payload)?;
         Ok(())

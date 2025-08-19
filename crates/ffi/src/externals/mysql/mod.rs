@@ -86,7 +86,7 @@ pub fn create_connection_pool(opt: MySQLOptions) -> Result<Pool> {
         opt.stmt_cache_size.to_string(),
     );
 
-    let pc = PoolConstraints::new(opt.pool_min, opt.pool_max).ok_or(anyhow!("创建连接池失败"))?;
+    let pc = PoolConstraints::new(opt.pool_min, opt.pool_max).ok_or_else(|| anyhow!("创建连接池失败"))?;
     let opts_builder = OptsBuilder::new()
         .pool_opts(PoolOpts::default().with_constraints(pc))
         .from_hash_map(&from_hash_map)?;
