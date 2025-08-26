@@ -49,7 +49,7 @@ impl MQTTV5Client {
     #[allow(dead_code)]
     pub async fn new(client_info: MqttClientOptions) -> Result<(Self, mpsc::Receiver<Event>)> {
         let mut options = MqttOptions::new(client_info.id, client_info.host, client_info.port);
-        options.set_keep_alive(Duration::from_secs(15));
+        options.set_keep_alive(Duration::from_secs(10));
         options.set_clean_start(true);
         options.set_connection_timeout(30);
         options.set_max_packet_size(Some(1_048_576)); // 1048576Byte = 1MB
