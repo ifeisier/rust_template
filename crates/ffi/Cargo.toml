@@ -9,7 +9,7 @@ description = "调用外部系统 (FFI, gRPC, HTTP 客户端等)"
 log = {workspace = true}
 anyhow = {workspace = true}
 serde = {workspace = true}
-mysql = {workspace = true}
+mysql_async = {workspace = true}
 r2d2 = {workspace = true}
 redis = {workspace = true}
 xx-toolkit = {workspace = true}

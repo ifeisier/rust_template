@@ -48,7 +48,7 @@ pub fn init_redis(path: &str) -> Result<r2d2::Pool<Client>> {
 /// # Errors
 ///
 /// 如果读取配置文件失败, 或者创建连接池失败, 会返回相应的错误.
-pub fn init_mysql(path: &str) -> Result<mysql::Pool> {
+pub fn init_mysql(path: &str) -> Result<mysql_async::Pool> {
     let opt = externals::mysql::MySQLOptions::from_file(path)?;
     externals::mysql::create_connection_pool(opt)
 }
