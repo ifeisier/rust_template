@@ -3,10 +3,11 @@
 use anyhow::Result;
 use rumqttc::Error;
 use rumqttc::v5::Event;
+use rumqttc::v5::mqttbytes::v5::Packet;
 use rumqttc::v5::{AsyncClient, MqttOptions, mqttbytes::QoS};
 use serde::Deserialize;
 use std::time::Duration;
-use tokio::sync::mpsc;
+use tokio::{sync::mpsc, time::sleep};
 use xx_toolkit::yaml::from_yaml_file;
 
 /// MQTT 客户端信息
@@ -56,6 +57,8 @@ impl MQTTV5Client {
         options.set_credentials(client_info.user_name, client_info.pass_word);
 
         let (client, mut event_loop) = AsyncClient::new(options, client_info.channel_cap);
+        let restore_subs = client_info.subscribes.clone();
+        let restore_client = client.clone();
         for ele in client_info.subscribes {
             client.subscribe(ele, QoS::AtLeastOnce).await?;
         }
@@ -65,11 +68,24 @@ impl MQTTV5Client {
             loop {
                 match event_loop.poll().await {
                     Ok(event) => {
+                        if let Event::Incoming(Packet::ConnAck(_ack)) = &event {
+                            log::debug!("MQTT 已连接, 开始恢复订阅.");
+                            for t in &restore_subs {
+                                if let Err(e) = restore_client.subscribe(t, QoS::AtLeastOnce).await
+                                {
+                                    log::error!("重连后订阅 {t} 失败: {e:?}");
+                                }
+                            }
+                        }
+
                         if let Err(e) = tx.send(event).await {
                             log::error!("将MQTT事件发送到通道错误:{e:?}");
                         }
                     }
-                    Err(e) => log::error!("接收MQTT事件错误:{e:?}"),
+                    Err(e) => {
+                        log::error!("接收MQTT事件错误:{e:?}");
+                        sleep(Duration::from_secs(10)).await;
+                    }
                 }
             }
         });
