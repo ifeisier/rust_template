@@ -1,6 +1,17 @@
 //! 获取 redis 连接、创建 redis 脚本和 redis 操作.
+//!
+//! 使用例子:
+//!
+//! ```norun
+//! use crate::connection_pool;
+//! use redis::Commands;
+//!
+//! fn example() {
+//!     let mut conn = connection_pool::get_index0_conn().unwrap();
+//!     let _: () = conn.set("my_key", 42).unwrap();
+//! }
+//! ```
 
-mod cmd;
 mod script;
 
 use anyhow::Result;

@@ -31,7 +31,16 @@ pub struct MqttClientOptions {
     pub subscribes: Vec<String>,
 }
 impl MqttClientOptions {
-    /// 从文件加载配置.
+    /// 从 YAML 文件加载 MQTT 客户端配置
+    ///
+    /// # 参数
+    /// * `path` - YAML 配置文件的路径
+    ///
+    /// # 返回值
+    /// 解析后的 MQTT 客户端配置
+    ///
+    /// # Errors
+    /// 当文件不存在、无法读取或 YAML 格式解析失败时，返回包含相应错误信息的 `anyhow::Error`
     #[allow(dead_code)]
     pub fn from_file(path: &str) -> Result<Self> {
         from_yaml_file(path)
@@ -44,9 +53,18 @@ pub struct MQTTV5Client {
     client: AsyncClient,
 }
 impl MQTTV5Client {
-    /// 创建新的 v5.0 客户端
+    /// 创建新的 MQTT v5.0 客户端实例
     ///
-    /// 返回 (客户端实例, `EventLoop`)
+    /// # 参数
+    /// * `client_info` - 包含客户端配置信息的 `MqttClientOptions` 结构体
+    ///
+    /// # 返回值
+    /// 包含客户端实例和事件接收通道的元组
+    ///
+    /// # Errors
+    /// - 连接服务器失败时返回错误
+    /// - 初始订阅主题失败时返回错误
+    /// - 创建异步通道失败时返回错误
     #[allow(dead_code)]
     pub async fn new(client_info: MqttClientOptions) -> Result<(Self, mpsc::Receiver<Event>)> {
         let mut options = MqttOptions::new(client_info.id, client_info.host, client_info.port);
@@ -94,6 +112,16 @@ impl MQTTV5Client {
     }
 
     /// 发送 MQTT 消息
+    ///
+    /// # 参数
+    /// * `topic` - 消息发布的主题
+    /// * `qos` - 消息的服务质量等级（0, 1, 2）
+    /// * `payload` - 消息的有效载荷，以字节向量形式表示
+    ///
+    /// # Errors
+    /// - 当 `qos` 不是 0、1、2 时，返回 `Error::InvalidQoS`
+    /// - 当发送队列已满时，返回 `Error::QueueFull`
+    /// - 当客户端未连接时，返回相应的连接错误
     #[allow(dead_code)]
     pub fn publish(&self, topic: &str, qos: u8, payload: Vec<u8>) -> Result<()> {
         let qos = qos_v5(qos)?;
@@ -106,6 +134,16 @@ impl MQTTV5Client {
     }
 
     /// 发送 MQTT 保留消息
+    ///
+    /// # 参数
+    /// * `topic` - 消息发布的主题
+    /// * `qos` - 消息的服务质量等级（0, 1, 2）
+    /// * `payload` - 消息的有效载荷，以字节向量形式表示
+    ///
+    /// # Errors
+    /// - 当 `qos` 不是 0、1、2 时，返回 `Error::InvalidQoS`
+    /// - 当发送队列已满时，返回 `Error::QueueFull`
+    /// - 当客户端未连接时，返回相应的连接错误
     #[allow(dead_code)]
     pub fn publish_retain(&self, topic: &str, qos: u8, payload: Vec<u8>) -> Result<()> {
         let qos = qos_v5(qos)?;
@@ -113,7 +151,15 @@ impl MQTTV5Client {
         Ok(())
     }
 
-    /// 订阅指定的 MQTT 主题
+    /// 订阅指定主题。
+    ///
+    /// # 参数
+    /// * `topic` - 主题名称
+    /// * `qos` - 服务质量等级 (0, 1, 2)
+    ///
+    /// # Errors
+    /// * 当 QOS 值无效时返回 [`Error::InvalidQoS`]。
+    /// * 当内部发送队列已满或订阅失败时返回错误。
     #[allow(dead_code)]
     pub fn subscribe(&self, topic: &str, qos: u8) -> Result<()> {
         let qos = qos_v5(qos)?;
@@ -121,7 +167,13 @@ impl MQTTV5Client {
         Ok(())
     }
 
-    /// 取消订阅指定的 MQTT 主题
+    /// 取消订阅指定主题。
+    ///
+    /// # 参数
+    /// * `topic` - 要取消订阅的主题
+    ///
+    /// # Errors
+    /// 如果底层客户端在尝试取消订阅时发生错误, 则返回 `Err`.
     #[allow(dead_code)]
     pub fn unsubscribe(&self, topic: &str) -> Result<()> {
         self.client.try_unsubscribe(topic)?;
