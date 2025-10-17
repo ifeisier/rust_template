@@ -13,6 +13,7 @@ mod http;
 use crate::app_context::AppContext;
 use dotenvy::from_filename;
 use http::start_http;
+use internal_core::mqtt_event::dispatch_mqtt_events;
 use internal_shared::flexi_logger::init_flexi_logger;
 use std::env;
 use std::io::Result;
@@ -41,13 +42,18 @@ fn main() {
 /// 异步执行入口
 async fn async_main() {
     let app_context = AppContext::build().await;
-    let app_context = match app_context {
+    let mut app_context = match app_context {
         Ok(v) => v,
         Err(e) => {
             log::error!("build app context error: {e}");
             exit(1);
         }
     };
+
+    if let Some(context) = app_context.mqtt_event_dispatch_context {
+        dispatch_mqtt_events(context);
+        app_context.mqtt_event_dispatch_context = None;
+    }
 
     if let Err(e) = start_http(app_context).await {
         log::error!("start http service error: {e}");

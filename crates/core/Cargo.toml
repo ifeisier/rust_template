@@ -10,3 +10,4 @@ tokio = {workspace = true}
 anyhow = {workspace = true}
 log = {workspace = true}
 rumqttc = {workspace = true}
+crossbeam = {workspace = true}

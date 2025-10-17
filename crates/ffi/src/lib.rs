@@ -12,7 +12,7 @@ use crate::mysql_client::MySQLOptions;
 use crate::redis_client::RedisOptions;
 use anyhow::Result;
 use redis::Client;
-use rumqttc::v5::Event;
+use rumqttc::v5::{AsyncClient, Event};
 use tokio::sync::mpsc;
 
 /// 初始化 Mqtt 客户端.
@@ -24,9 +24,9 @@ use tokio::sync::mpsc;
 /// # Errors
 ///
 /// 如果读取配置文件失败, 或者 MQTT 客户端初始化失败, 会返回相应的错误.
-pub async fn init_mqtt_client(path: &str) -> Result<(MQTTV5Client, mpsc::Receiver<Event>)> {
+pub async fn init_mqtt_client(path: &str) -> Result<(AsyncClient, mpsc::Receiver<Event>)> {
     let opt = MqttClientOptions::from_file(path)?;
-    MQTTV5Client::new(opt).await
+    MQTTV5Client::connect(opt).await
 }
 
 /// 初始化 Redis 连接池.
