@@ -1,6 +1,7 @@
 //! 用来创建 MQTT 客户端.
 
 use anyhow::Result;
+use internal_shared::yaml::from_yaml_file;
 use rumqttc::{
     Error,
     v5::{
@@ -12,7 +13,6 @@ use rumqttc::{
 use serde::Deserialize;
 use std::time::Duration;
 use tokio::{sync::mpsc, time::sleep};
-use xx_toolkit::yaml::from_yaml_file;
 
 /// MQTT 客户端信息
 #[derive(Debug, Deserialize)]

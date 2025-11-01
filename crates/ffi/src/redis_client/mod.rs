@@ -15,10 +15,10 @@
 mod script;
 
 use anyhow::Result;
+use internal_shared::yaml::from_yaml_file;
 use r2d2::Pool;
 use redis::{Client, ConnectionAddr, ConnectionInfo, ProtocolVersion, RedisConnectionInfo};
 use serde::Deserialize;
-use xx_toolkit::yaml::from_yaml_file;
 
 /// redis 配置
 #[derive(Debug, Deserialize)]

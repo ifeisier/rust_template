@@ -23,7 +23,7 @@ thiserror = "2.0.17"
 
 tokio = { version = "1.48.0", default-features = false, features = ["rt", "rt-multi-thread", "net", "fs", "time", "sync", "signal"] }
 axum = "0.8.6"
-tower = { version = "0.5.2", default-features = false, features = ["limit", "timeout"] }
+reqwest = { version = "0.12.24", default-features = false, features = ["blocking", "json", "rustls-tls"] }
 
 r2d2 = "0.8.10"
 redis = { version = "0.32.7", default-features = false, features = ["r2d2", "script"] }
@@ -40,5 +40,5 @@ async-trait = "0.1.89"
 crossbeam = "0.8.4"
 rust_decimal = "1.39.0"
 rust_decimal_macros = "1.39.0"
+bytes = "1.10.1"
 # pyo3 = { version = "0.26.0", features = ["auto-initialize"] }
-xx-toolkit = { git = "https://github.com/ifeisier/xx-toolkit", branch = "main", version = "0.1.0" }

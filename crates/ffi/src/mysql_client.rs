@@ -57,9 +57,9 @@
 //! ```
 
 use anyhow::{Result, anyhow};
+use internal_shared::yaml::from_yaml_file;
 use mysql_async::{Compression, Opts, OptsBuilder, Pool, PoolConstraints, PoolOpts};
 use serde::Deserialize;
-use xx_toolkit::yaml::from_yaml_file;
 
 /// mysql 配置
 #[derive(Debug, Deserialize)]
